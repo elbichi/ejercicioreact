@@ -31,3 +31,49 @@ isAdmin = (req, res, next) => {
     res.status(403), send({ message: "requiere rol Admin" });
   });
 };
+
+isCorordinador=(req,res,next) =>{
+  User.findById(req.UserId).exce((err,user)=> {
+    if (err){
+      res.status(500).send({messenger: err});
+      return;
+    }
+
+    if (user.roles.include('coordinador')){
+      next();
+    return;
+    }
+    res.satus(403).send({message:'requiere rol de coodinador '});
+  });
+
+};
+isAuxiliar=(req,res,next) =>{
+  User.findById(req.UserId).exce((err,user)=> {
+    if (err){
+      res.status(500).send({messenger: err});
+      return;
+    }
+
+    if (user.roles.include('auxiliar')){
+      next();
+    return;
+    }
+    res.status(403).send({message:'requiere rol de auxiliar '});
+  });
+
+};
+
+const authJwt={
+  verifyToken,
+  isAdmin,
+  isCorordinador,
+  isAuxiliar
+};
+
+module.exports={
+  verifyToken,
+  isAdmin,
+  isCorordinador,
+  isAuxiliar
+};
+
