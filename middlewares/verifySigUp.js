@@ -15,15 +15,15 @@ const checkDuplicateUsernameOrEmail = async (req, res, next) => {
         }
         next();
     }catch(err){
-        return res.status(500).json({message: err. message});
+        res.status(500).json({message: err. message});
     }
-}
+};
 
 const ckeckRolesExisted = (req, res, next) => {
     if (req.body.roles){
-        const validRoeles = ['user', 'admin', 'coordinador', 'auxiliar'];
-        for(const validRoeles of req.body.roles){
-            if(!validRoeles.includes(role)){
+        const validRoles = [ 'admin', 'coordinador', 'auxiliar'];
+        for(const validRoles of req.body.roles){
+            if(!validRoles.includes(role)){
                 return res.status(400).send({
                     message: `Error! Rol ${role} no existe!`
                 });

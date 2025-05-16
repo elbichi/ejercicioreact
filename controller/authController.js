@@ -1,7 +1,7 @@
 const User=require('../models/User');
 const bcript = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const config = requiere('../config/auth.config');
+const config = require('../config/auth.config');
 
 
 //funcion de registro
@@ -11,7 +11,7 @@ exports.singnup = async (req, res)=> {
 
         //validacion 
         if(!username || !email || !password){
-            return res.satus(400).json({
+            return res.status(400).json({
                 message : 'Todos los campos son obligatorios'
             });
         }
@@ -34,10 +34,10 @@ exports.singnup = async (req, res)=> {
         });
         
         //peprara respuesta
-        const userReponse = user.toObject();
-        delete userReponse.password;
+        const userResponse = user.toObject();
+        delete userResponse.password;
 
-        res.satuts(201).json({
+        res.status(201).json({
             success: true,
             message: 'usuarios registrado correctamente',
             user: userReponse,
@@ -60,18 +60,16 @@ try{
     console.log('intento de login para: ', username , 'con pass', password);
     const user=await User.findOne({username}.select('+password'));
     if(!user){
-        console.log('usuario no encontrado');
-        return res.status(404).json
-        ({
+        console.log('usuario no encontrado en DB');
+        return res.status(404).json({
             success: false,
             message: 'usuario no encontrado',
         });
 
     }
     // debug: mostrar hash almacenado
-} catch (error) {
-    console.log('hash almacenado', user.password);
 
+    console.log('hash almacenado', user.password);
     //compraracion directa con ccrypt
 
     const isMatch = await bcript.compare(password, user.password);
@@ -79,28 +77,27 @@ try{
 
     if(!isMatch){
         // debug contraseña
-        const testHash = await bcript.hash(password, user.password.substring(0, 29));
+        const testHash = await bcrypt.hash(password, user.password.substring(0, 29));
         console.log('Hash recalculado', testHash);
         console.log('conside con el alccenado?', testHash === user.password);
         return res.status(401).json({
             susccess: false,
             accessToken: null,
-            message: 'Creadenciales incorrectas',
-        })
+            message: 'Creadenciales incorrectas'
+        });
     }
 
     //Generador token JWT
 
-    const token = jwt.sing(
+    const token = jwt.sign(
         {
             id: user._id,
             username: user.username,
             roles: user.roles
         },
         config.secret,
-        {
-            expiresIn: config.jwtExpiration,
-        });
+        {expiresIn: config.jwtExpiration,}
+    );
         res.status(200).json({
             success: true,
             message: 'Inicio de sesion exitoso',
@@ -112,9 +109,9 @@ try{
             },
             accessToken: token
         });
-
+} catch (error) {
         //error coregido
-    console.error('hash almacenado', error);
+    console.error('Error en el login:', error);
     res.status(500).json({
         success: false,
         message: 'Error al iniciar sesión',

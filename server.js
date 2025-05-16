@@ -7,9 +7,9 @@ const mongoose = require('mongoose');
 const app =express();
 
 //middleawr
-app,use(cors());
-app,use(bodyParser.json());
-app,use(bodyParser.urlencoded({extended: true}));
+app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
 
 //coneccion mongo
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/lukas').then(() => {
@@ -19,8 +19,8 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/lukas').t
 });
 
 //Importacion de rutas
-const authRoutes = requiere('./routes/authRoutes');
-const userRouttes = requiere('./routes/userRoutes');
+const authRoutes = require ('./routes/authRoutes');
+const userRoutes = require ('./routes/userRoutes');
 
 //configuracion de rutas
 app.use('/api/auth', authRoutes);

@@ -27,7 +27,7 @@ UserShema.pre('save', async function (next){
     try{
         console.log('Contraseña antes de hasear', this.password);
         const salt = await bcrypt.getSalt(12);
-        this.password = await bcrypt.hash(this.password);
+        this.password = await bcrypt.hash(this.password,);
         console.log('Contraseña hasheada:',
             this.password
         );
