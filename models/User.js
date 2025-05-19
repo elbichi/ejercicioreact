@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const { default: mongoose } = require('mongoose');
+
 
 const UserShema = new mongoose.Schema({
-    username: {type: String, require: true, unique: true},
-    email:{type: String, require: true, unique: true},
-    password:{type: String, require: true},
-    roles:[{type: String, enum:['admin', 'cordinador', 'auxiliar']}]
+    username: {type: String, required: true, unique: true},
+    email:{type: String, required: true, unique: true},
+    password:{type: String, required: true},
+    roles:[{type: String, enum:['admin', 'coordinador', 'auxiliar']}]
     }, {
         timestamps: true,
     //desactive la notificacion de id
@@ -26,14 +26,14 @@ UserShema.pre('save', async function (next){
 
     try{
         console.log('Contraseña antes de hasear', this.password);
-        const salt = await bcrypt.getSalt(12);
-        this.password = await bcrypt.hash(this.password,);
+        const salt = await bcrypt.genSalt(12);
+        this.password = await bcrypt.hash(this.password, salt);
         console.log('Contraseña hasheada:',
             this.password
         );
         next();
     } catch(err){
-    console.error('Error al hasshear:,err');
+    console.error('Error al hasshear:',err);
 next(err);
 }
     
@@ -41,9 +41,8 @@ next(err);
 
 //metodo para compara contraseñas 
 
-UserShema.method.comparePassword=async function
-(candidatePassword){
+UserShema.methods.comparePassword=async function(candidatePassword){
     return await bcrypt.compare(candidatePassword,this.password)
 };
 
-module.exports=mongoose.model('user',UserShema);
+module.exports =mongoose.model('User', UserShema);

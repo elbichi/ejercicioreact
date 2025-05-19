@@ -34,13 +34,13 @@ exports.singnup = async (req, res)=> {
         });
         
         //peprara respuesta
-        const userResponse = user.toObject();
-        delete userResponse.password;
+        const UserResponse = user.toObject();
+        delete UserResponse.password;
 
         res.status(201).json({
             success: true,
             message: 'usuarios registrado correctamente',
-            user: userReponse,
+            user: UserResponse,
             accessToken: token
         });
     }catch (error){
@@ -72,7 +72,7 @@ try{
     console.log('hash almacenado', user.password);
     //compraracion directa con ccrypt
 
-    const isMatch = await bcript.compare(password, user.password);
+    const isMatch = await bcrypt.compare(password, user.password);
     console.log('resultado de compraracion', isMatch);
 
     if(!isMatch){

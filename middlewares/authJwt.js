@@ -1,7 +1,6 @@
-const jwt = require("jsonwebtoken");
-const config = require("../config/auth.config");
-const db = require("../models/User");
-const { useRef } = require("react");
+const jwt = require('jsonwebtoken');
+const config = require('../config/auth.config');
+const db = require('../models/User');
 const User = db.User;
 
 verifyToken = (req, res, next) => {
@@ -29,11 +28,11 @@ isAdmin = (req, res, next) => {
       next();
       return;
     }
-    res.status(403), send({ message: "requiere rol Admin" });
+    res.status(403).send({ message: "requiere rol Admin" });
   });
 };
 
-isCorordinador=(req,res,next) =>{
+isCoordinador=(req,res,next) =>{
   User.findById(req.userId).exce((err,user)=> {
     if (err){
       res.status(500).send({messenger: err});
@@ -67,14 +66,14 @@ isAuxiliar=(req,res,next) =>{
 const authJwt={
   verifyToken,
   isAdmin,
-  isCorordinador,
+  isCoordinador,
   isAuxiliar
 };
 
 module.exports={
   verifyToken,
   isAdmin,
-  isCorordinador,
+  isCoordinador,
   isAuxiliar
 };
 

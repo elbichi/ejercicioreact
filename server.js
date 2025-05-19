@@ -6,17 +6,18 @@ const mongoose = require('mongoose');
 
 const app =express();
 
-//middleawr
+
+// Middlewares
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
 //coneccion mongo
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/lukas').then(() => {
-    console.log('Connected to MonfoDB');
-}).catch(err => {
-    console.error('MongoDB connection error:', err);
-});
+
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/lukas')
+.then(() => console.log('ok conexion a MongoDB exitosa'))
+.catch(err => console.error('x error de conexion a MongoBD: ',err));
+
 
 //Importacion de rutas
 const authRoutes = require ('./routes/authRoutes');
@@ -27,7 +28,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/test', userRoutes);
 
 //puerto y arranque del servidor
-const PORT = process.env.PORT || 3000 ;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+    console.log(`Servidor corriendo en http://localhost:${PORT}`)
 });
