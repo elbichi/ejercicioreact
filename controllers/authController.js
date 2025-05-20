@@ -28,9 +28,8 @@ exports.singnup = async (req, res)=> {
         //guardar Usuarios
         await user.save();
         //general token
-        const token =jwt.sing({id: user._id}.
-        config.secret, {
-            expiresIn: config.jwtExpiration
+        const token =jwt.sign({id: user._id}, config.secret, {
+        expiresIn: config.jwtExpiration
         });
         
         //peprara respuesta
