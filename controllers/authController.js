@@ -1,11 +1,11 @@
-const User=require('../models/User');
-const bcript = require('bcryptjs');
+const User = require('../models/User');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const config = require('../config/auth.config');
 
 
 //funcion de registro
-exports.singnup = async (req, res)=> {
+exports.signup = async (req, res)=> {
     try {
         const {username,email,password} =req.body;
 
@@ -57,7 +57,7 @@ exports.signin= async(req,res)=>{
 try{
     const {username,password}=req.body;
     console.log('intento de login para: ', username , 'con pass', password);
-    const user=await User.findOne({username}.select('+password'));
+    const user = await User.findOne({ username }).select('+password');
     if(!user){
         console.log('usuario no encontrado en DB');
         return res.status(404).json({
@@ -80,7 +80,7 @@ try{
         console.log('Hash recalculado', testHash);
         console.log('conside con el alccenado?', testHash === user.password);
         return res.status(401).json({
-            susccess: false,
+            success: false,
             accessToken: null,
             message: 'Creadenciales incorrectas'
         });
@@ -117,5 +117,5 @@ try{
         error: error.message,
     });
     }
-};  
-// Removed redundant catch block at the end of the function
+};
+
