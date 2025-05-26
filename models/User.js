@@ -1,0 +1,45 @@
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
+
+const userSchema = new  mongoose.Schema({
+    username:{
+        type: String,
+        require: true,
+        unique: true,
+        trim: true
+    },
+    email:{
+        type: String,
+        required: true,
+        unique: true,
+        lowercase: true,
+        trim: true
+    },
+    password:{
+        type: String,
+        require: true,
+        minlength: 6,
+        select: false
+    },
+    role:{
+        type: String,
+        default: 'auxiliar', enum:  ['admin', 'coordinador', 'auxiliar']},
+},{
+    timestamps:true,
+    versionKey: false
+});
+
+//Hash de contraseña amtes de guardar
+userSchema.pre('save', async function(next){
+    if (!this.isModified('password')) 
+    return next();
+try{
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+}catch(error){
+    next(error);
+}
+});
+
+module.exports = mongoose.model('user', userSchema);

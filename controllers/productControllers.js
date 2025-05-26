@@ -103,6 +103,134 @@ exports.getProducts = async (req, res)=>{
             data: products
         });
     }catch(error){
-        console.error('')
+        console.error('error de getprocducts ',error)
+       res.status (500).json({
+        success: false,
+        message: 'Error al obtener los productos'
+       });
+
+
+
     }
-}
+};
+
+exports.getProductsById=async(req,res)=>{
+    try{
+        const product=await Product.finById(req.params.id)
+        .populate('category','name description')
+        .populate('subcategory', 'name description');
+        if (!product){
+            return res.status(404).json({
+                success: false,
+                message: 'producto no encontrado '
+            });
+        }
+        res.status(200).json({
+            success: true,
+            data : product
+        });
+    }catch(error){
+        console.error('Error en getProductById',error);
+        res.status(500).json({
+
+            success:false,
+            message: 'Error al obtener el producto'
+        });
+    }
+};
+
+exports.updateProduct =async(req, res)=>{
+    try{
+        const {name, description,price,stock,category,subcategory}=req.body;
+        const updateData ={};
+
+        //validar y preparar datos para actualizacion
+        if(name) updateData.name=name;
+        if(description)updateData.description=description;
+        if(price)updateData.price=price;
+        if(stock)updateData.stock=stock;
+        //validar relaciones si se actualizan
+        if(category || subcategory){
+            if(category){
+                const categoryExists=await Category.findById(category);
+                if(!categoryExists){
+                    return res.status(404).json({
+                        success: false,
+                        message: 'La categoria especifica no existe'
+                    });
+                }
+                updateData.category=category;
+            }
+            if(subcategory){
+                const subcategoryExists=await Subcategory.findOne({
+                    _id: subcategory,
+                    category: category|| updateData.category
+                });
+                if(!subcategoryExists){
+                    return res.status(400).json({
+                        success: false,
+                        message: 'La subcategoria no existe o no pertenese a la categoria '
+                    });
+                }
+                updateData.subcategory=subcategory;
+            }
+        }
+
+        //actualizar el producto
+        const updateProduct= await Product.finByIdAndUpdate(
+            req.params.id,
+            updateData,
+            {
+                new:true, 
+                runValidators: true
+            }
+        )
+        .populate('category', 'name')
+        .populate('subcategory', 'name');
+
+        if (!this.updateProduct){
+            return res.status(404).json({
+                success: false,
+                message: 'producto no encontrado'
+            });
+        }
+        res.status(200).json({
+            success: true,
+            message:'producto actilizado exitosamente',
+            data: updateProduct
+        });
+
+
+    }catch(error){
+        console.error('Error en updateaproduct:',error);
+        req.status(500).json({
+            success: false,
+            message: 'Error al actualizar el producto'
+        });
+
+    }
+};
+
+exports.deleteProduct=async(req,res)=>{
+    try{
+        const product=await Product.finByIdAndDelete(req.params.id);
+        if(!product){
+            return res.status(404).json({
+                success: false,
+                message: 'producto no encontrado '
+            });
+
+        }
+        res.status(200).json({
+            success: true,
+            message: 'porducto eliminado exitosamente',
+            data: product
+        });
+    }catch(error){
+        console.error('Error en deleteProduct', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al eliminar el producto'
+        });
+    }
+};
