@@ -24,7 +24,7 @@ categorySchema.pre('save', async function (next) {
         const indexes = await collection.indexes();
 
         //Bucarcar y eliminar indice problematico con nombre "nombre_1"
-        const problematicIndex = indexes.find(indexes.name === 'nombre_1');
+        const problematicIndex = indexes.find(index => index.name === 'nombre_1');
         if(problematicIndex){
             await collection.dropIndex('nombre_1');
         }
@@ -38,7 +38,7 @@ categorySchema.pre('save', async function (next) {
     next();
 });
 //Crear nuevo indice correcto
-categorySchema.index({name:1},{
+categorySchema.index({name: 1},{
     unique: true,
     name: 'name_1'//Nombre para el indice
 });

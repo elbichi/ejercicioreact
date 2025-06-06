@@ -1,172 +1,113 @@
-const Category =require('../models/Category');
+const Category = require('../models/Category');
 
-exports.createCategory =async(req ,res )=>{
-    try{
-        const{name,description}=req.body;
-
-        //Validacion 
-        if(!name || typeof name !== 'string'|| !name, trim()){
-            return res.status(400).json({
-                success:false,
-                message:'El nombre es oblicatorio y debe ser texto valido'
-            });
-        }
-        if(!description || typeof description !== 'string' || !description.trim()){
-            return res.status(400).json ({
-                success:false,
-                message: 'La descripcion es oblicatoria y debe ser texto valido'
-            });
-        }
-    
-        const trimedName =name.trim();
-        const trimedDesc =description.trim();
-
-        //verificar si ya existe la categoria
-        const existingCategoria=await Category.findOne({name:trimedName});
-        if(existingCategoria){
-        return res.status(400).json({
-            success: false,
-            message:'ya existe una catehoria con ese nombre' 
-
+// Obtener todas las categorías
+exports.getAllCategories = async (req, res) => {
+    try {
+        const categories = await Category.find();
+        res.status(200).json({
+            success: true,
+            data: categories
         });
-    }
-
-    const newCategory = new Categorye({
-        name: trimedName,
-        description: trimedDesc  
-    });
-    await newCategory.save();
-    res.status(201).json({
-        success: true,
-        message: 'categoria creada con exito',
-        category: newCategory
-    });
     } catch (error) {
-        console.error('error en createCategory:', error);
-
-        //manejo especifico de error de duplicados
-        if (error.code === 11000){
-            return res.status(400).json({
-                success: false,
-                message: 'ya existe una categoria con ese nombre'
-            });
-        }
-
         res.status(500).json({
             success: false,
-            message: 'Error al crear caregoria',
+            message: 'Error al obtener categorías',
             error: error.message
         });
     }
 };
 
-exports.getCategories=async(req, res)=>{
-    try{
-        const categories = await Category.find().sort({createdAt: -1});
-        res.status(200).json({
-            success: true,
-            data: categories,
-    
-        });
-    }catch (error){
-        console.error('Error en getCategories:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Error al obtener categorias'
-        });
-    }
-};
-
+// Obtener categoría por ID
 exports.getCategoryById = async (req, res) => {
     try {
-        const category =await Category.findById(req.params.id);
-        if(!category){
+        const category = await Category.findById(req.params.id);
+        if (!category) {
             return res.status(404).json({
                 success: false,
-                message: 'Categoria no encontrada'
+                message: 'Categoría no encontrada'
             });
         }
-        res.status(200),json({
+        res.status(200).json({
             success: true,
             data: category
         });
-
-    }catch (error){
-        console.error('Error en getCategoryById', error);
-        res.status(500).json({
-            success:false,
-            message: 'Error al obtener la categoria  '
-        });
-    }
-
-};
-
-exports.updateCategory =async(req, res)=>{
-    try{
-        const {name, descripcion}=req.body;
-        const updateData={};
-        if (name){
-            updateData,name = name.trim();
-            //verificar si el nuevo nombre ya existe 
-            const existing =await Category.findOne({
-                name: updateData.name,
-                _id: {$ne: req.params.id}
-            });
-        if (existing){
-            return res.status(400),json({
-                success: false,
-                message: 'ya existe una categoria con ese nombre'
-
-            });
-        }
-    }
-        if(descripcion){
-            updateData.descripcion = descripcion.trim();
-        }
-        const updateCategory =await Category.findByIdAndUpdate(
-            req.params.id,
-            updateData,
-            {new: true, runValidators: true}
-        );
-        if(!updateCategory){
-            return res.status(404).json({
-                success: false,
-                message: 'Categoria no encotrada'
-            });
-        }
-    res.status(200).json({
-        success:true,
-        message: 'Categoria actuaizada ',
-        data : updateCategory
-    });
-    }catch (error){
-        console.error('Error en updateCategory:', error);
+    } catch (error) {
         res.status(500).json({
             success: false,
-            message: 'Error al actualizar categoria '
+            message: 'Error al obtener categoría',
+            error: error.message
         });
     }
 };
 
-exports.deleteCategory = async (req, res)=>{
-    try{
-        const deleteCategory =await Category.findByIdAndDelete(req.params.id);
-        if(!deleteCategory){
+// Crear nueva categoría
+exports.createCategory = async (req, res) => {
+    try {
+        const { name, description } = req.body;
+        const category = new Category({
+            name,
+            description
+        });
+        const savedCategory = await category.save();
+        res.status(201).json({
+            success: true,
+            data: savedCategory
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Error al crear categoría',
+            error: error.message
+        });
+    }
+};
+
+// Actualizar categoría
+exports.updateCategory = async (req, res) => {
+    try {
+        const updatedCategory = await Category.findByIdAndUpdate(
+            req.params.id,
+            { $set: req.body },
+            { new: true }
+        );
+        if (!updatedCategory) {
             return res.status(404).json({
                 success: false,
-                message: 'Categoria no encontraba'
+                message: 'Categoría no encontrada'
             });
-
         }
         res.status(200).json({
-            success:true,
-            message: 'Categoria eliminada'
+            success: true,
+            data: updatedCategory
         });
-    }catch (error){
-        console.error('Error en deleteCategory', error)
+    } catch (error) {
         res.status(500).json({
-            success:false,
-            message: 'Error al eliminar categoria'
+            success: false,
+            message: 'Error al actualizar categoría',
+            error: error.message
+        });
+    }
+};
+
+// Eliminar categoría
+exports.deleteCategory = async (req, res) => {
+    try {
+        const deletedCategory = await Category.findByIdAndDelete(req.params.id);
+        if (!deletedCategory) {
+            return res.status(404).json({
+                success: false,
+                message: 'Categoría no encontrada'
+            });
+        }
+        res.status(200).json({
+            success: true,
+            message: 'Categoría eliminada correctamente'
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Error al eliminar categoría',
+            error: error.message
         });
     }
 };
