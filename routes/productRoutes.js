@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const productController = require('../controllers/productControllers');
 const{check} =require('express-validator');
+const { authJwt, role } = require('../middlewares');
 const validateProduct = [
     check('name').not().isEmpty().withMessage('El nombre es obligatorio'),
     check('description').not().isEmpty().withMessage('La descripcion es obligatoria'),
@@ -14,6 +15,6 @@ router.post('/', validateProduct, productController.createProduct);
 router.get('/', productController.getProducts);
 router.get('/:id', productController.getProductById);
 router.put('/:id', validateProduct, productController.updateProduct);
-router.delete('/:id', productController.deleteProduct);
+router.delete('/:id',[authJwt.verifyToken, role.checkRole('admin')],productController.deleteProduct);
 
 module.exports = router;
