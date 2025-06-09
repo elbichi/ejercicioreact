@@ -32,16 +32,16 @@ exports.getUserById = async(req, res)=>{
             });
         }
         // Validaciones de acceso
-        if (req.user.role === 'auxiliar' && req.user.id !==user.id.toString()){
+        if (req.userRole === 'auxiliar' && req.userId !== user._id.toString()){
             return res.status(403).json({
                 success: false,
-                message:'No pudes ver usuario admin'
+                message:'No puedes ver usuario admin'
             });
         }
-        if(req.user.role ==='coordinador' && user.role === 'admin'){
+        if(req.userRole === 'coordinador' && user.role === 'admin'){
             return res.status(403).json({
                 success: false,
-                message:'No pudes ver usuario admin'
+                message:'No puedes ver usuario admin'
             });
         }
         res.status(200).json({

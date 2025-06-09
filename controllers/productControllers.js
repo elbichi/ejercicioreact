@@ -4,11 +4,11 @@ const Subcategory = require('../models/Subcategory');
 
 exports.createProduct = async (req, res) => {
     try {
-        const { name, description, price, stock, Category, subcategory } = req.body;
+        const { name, description, price, stock, category, subcategory } = req.body;
 
         //Validacion de campos requeridos
 
-        if (!name || !description || !price || !stock || !Category || !subcategory) {
+        if (!name || !description || !price || !stock || !category || !subcategory) {
             return res.status(400).json({
                 success: false,
                 message: 'Todos los campos son requeridos'
@@ -17,7 +17,7 @@ exports.createProduct = async (req, res) => {
 
         //Verifican que la categoria exista
 
-        const categoryExists = await Category.findById(Category);
+        const categoryExists = await Category.findById(category);
         if (!categoryExists) {
             return res.status(404).json({
                 success: false,
@@ -27,7 +27,7 @@ exports.createProduct = async (req, res) => {
         //Verificar que la subcategoria existe y pertenezca a la categoria
         const subcategoryExists = await Subcategory.findOne({
             _id: subcategory,
-            category: Category // Cambiado a Category
+            category: category // Cambiado a Category
         });
 
         if (!subcategoryExists) {
@@ -43,7 +43,7 @@ exports.createProduct = async (req, res) => {
             description,
             price,
             stock,
-            category: Category, // Cambiado a Category
+            category, // Cambiado a Category
             subcategory
             //CreatedBy se agrega 
         });
@@ -164,7 +164,7 @@ exports.updateProduct = async (req, res) => {
         }
 
         //actualizar el producto
-        const updateProduct = await Product.finByIdAndUpdate(
+        const updateProduct = await Product.findByIdAndUpdate(
             req.params.id,
             updateData,
             {
@@ -190,7 +190,7 @@ exports.updateProduct = async (req, res) => {
 
     } catch (error) {
         console.error('Error en updateaproduct:', error);
-        req.status(500).json({
+        res.status(500).json({
             success: false,
             message: 'Error al actualizar el producto'
         });

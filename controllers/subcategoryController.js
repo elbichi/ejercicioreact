@@ -49,7 +49,7 @@ exports.createSubcategory = async(req, res)=>{
 //Obtener todas las subcategorias
 exports.getSubcategories = async (req, res)=>{
     try{
-        const getSubcategories = await Subcategory.findById().populate('category', 'name');
+        const subcategories = await Subcategory.find().populate('category', 'name');
         res.status(200).json({
             success: true,
             data: subcategories
@@ -66,9 +66,9 @@ exports.getSubcategories = async (req, res)=>{
 //Obtener subcategorias por id
 exports.getSubcategoryById = async(req, res)=>{
     try{
-        const Subcategory = await Subcategory.findById
+        const subcategory = await Subcategory.findById
         (req.params.id).populate('category','name');
-        if(!Subcategory){
+        if(!subcategory){
             return res.status(404).json({
                 success: false,
                 message:'Subcategoria no encontrada'
@@ -76,7 +76,7 @@ exports.getSubcategoryById = async(req, res)=>{
         }
         res.status(200).json({
             success:true,
-            data: Subcategory
+            data: subcategory
         });
     }catch(error){
         console.error('Error al obtener la subcategoria:', error);
