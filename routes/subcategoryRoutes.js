@@ -12,10 +12,10 @@ const validateSubcategory =[
 ];
 
 //Rutas
-router.post('/',  validateSubcategory,subcategoryController.createSubcategory);
+router.post('/', [authJwt.verifyToken, role.checkRole('admin','coordinador')], validateSubcategory,subcategoryController.createSubcategory);
 router.get('/', subcategoryController.getSubcategories);
-router.get('/:id', subcategoryController.getSubcategoryById);
-router.put('/:id', validateSubcategory, subcategoryController.updateSubcategory);
+router.get('/:id',subcategoryController.getSubcategoryById);
+router.put('/:id',[authJwt.verifyToken, role.checkRole('admin','coordinador')], validateSubcategory, subcategoryController.updateSubcategory);
 router.delete('/:id',[authJwt.verifyToken, role.checkRole('admin')], subcategoryController.deleteSubcategory);
 
 module.exports = router;

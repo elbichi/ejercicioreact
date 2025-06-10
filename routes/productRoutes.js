@@ -11,10 +11,10 @@ const validateProduct = [
     check('category').not().isEmpty().withMessage('La categoria es requerida'),
     check('subcategory').not().isEmpty().withMessage('La subcategoria es requerida'),
 ];
-router.post('/', validateProduct, productController.createProduct);
+router.post('/', [authJwt.verifyToken, role.checkRole('admin','coordinador')],validateProduct, productController.createProduct);
 router.get('/', productController.getProducts);
 router.get('/:id', productController.getProductById);
-router.put('/:id', validateProduct, productController.updateProduct);
+router.put('/:id', [authJwt.verifyToken, role.checkRole('admin','coordinador')],validateProduct, productController.updateProduct);
 router.delete('/:id',[authJwt.verifyToken, role.checkRole('admin')],productController.deleteProduct);
 
 module.exports = router;
